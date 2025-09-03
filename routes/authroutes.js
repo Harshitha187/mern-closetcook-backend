@@ -1,0 +1,14 @@
+import express from 'express';
+import {login,logout,register,verifyotp,verifyEmail,resetpass,verifyreset,changepass, isAuthenticated} from '../controllers/authcontroller.js';
+import userAuth from '../middleware/userauth.js';
+const authrouter=express.Router();
+authrouter.post('/register',register);
+authrouter.post('/login',login);
+authrouter.post('/logout',logout);
+authrouter.post('/verifyotp',userAuth,verifyotp);
+authrouter.post('/verifyemail',userAuth,verifyEmail);
+authrouter.post('/resetpassword',userAuth,resetpass);
+authrouter.post('/verifyreset',userAuth,verifyreset);
+authrouter.post('/changepassword',userAuth,changepass);
+authrouter.get('/isAuthenticated',userAuth,isAuthenticated);
+export default authrouter;
