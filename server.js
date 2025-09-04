@@ -10,7 +10,7 @@ const port = process.env.PORT || 4000;
 connectDB();
 app.use(express.json());
 app.use(cookieParser());
-const allowedOrigins=['https://closetcook.vercel.app','http://localhost:5173']
+const allowedOrigins=['https://closetcook.vercel.app']
 app.use(cors({
   origin: allowedOrigins,
   credentials: true
