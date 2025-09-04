@@ -5,22 +5,31 @@ import cookieParser from "cookie-parser";
 import connectDB from "./config/mongodb.js";
 import authrouter from "./routes/authroutes.js";
 import userrouter from "./routes/userRoutes.js";
+
 const app = express();
 const port = process.env.PORT || 4000;
+
+app.set("trust proxy", 1); // <-- important for Render/Vercel
+
 connectDB();
 app.use(express.json());
 app.use(cookieParser());
-const allowedOrigins=['https://closetcook.vercel.app']
+
+const allowedOrigins = ['https://closetcook.vercel.app'];
 app.use(cors({
   origin: allowedOrigins,
   credentials: true
 }));
+
 app.use("/api/auth", authrouter);
 app.use("/api/user", userrouter);
+
 app.get("/", (req, res) => {
-  res.send("gay mf");
+  res.send("Running");
 });
+
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
+
 export default app;
