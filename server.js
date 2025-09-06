@@ -15,7 +15,7 @@ connectDB();
 app.use(express.json());
 app.use(cookieParser());
 
-const allowedOrigins = ['https://closetcook.vercel.app'];
+const allowedOrigins = ['https://closetcook.vercel.app','http://localhost:5173'];
 app.use(cors({
   origin: allowedOrigins,
   credentials: true

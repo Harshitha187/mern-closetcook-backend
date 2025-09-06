@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
-
+import dotenv from "dotenv";
+dotenv.config({ path: "../.env" });
 const userAuth = async (req, res, next) => {
     const token = req.cookies.token;
     if (!token) return res.json({ success: false,message:"No token found"});

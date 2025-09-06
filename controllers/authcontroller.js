@@ -2,6 +2,8 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../models/usermodels.js';
 import transporter from '../config/nodemailer.js';
+import dotenv from 'dotenv';
+dotenv.config({ path: "../.env" });
 export const register=async(req,res)=>{
   const {name,email,password}=req.body;
   try {
