@@ -164,9 +164,9 @@ export const verifyEmail = async (req, res) => {
 };
 export const resetpass=async(req,res)=>{
   try{
-  const userId=req.userId;
-  if(!userId){return res.json({success:false,message:"User ID is required"})};
-  const user=await User.findById(userId);
+  const {email}=req.body;
+  if(!email){return res.json({success:false,message:"Email is required"})};
+  const user=await User.findOne({email});
   if(!user){return res.json({success:false,message:"No user found"})};
   const otp=Math.floor(100000+Math.random()*900000);
   const expiry=Date.now()+5*60*1000;
@@ -179,6 +179,8 @@ export const resetpass=async(req,res)=>{
     subject: 'Your password reset OTP',
     text: `Your password reset OTP code is ${otp}. It is valid for 5 minutes.`
   };
+  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+  res.cookie('token', token, { httpOnly: true, secure:true, sameSite:'none', maxAge: 7 * 24 * 60 * 60 * 1000 });
   res.json({success:true,message:"OTP sent successfully"});
   await transporter.sendMail(message);
   } catch(error) {
