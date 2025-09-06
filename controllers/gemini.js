@@ -31,7 +31,7 @@ export const analyzeOutfit = async (req, res) => {
     if (imageBase64) {
       userParts.push({
         inlineData: {
-          mimeType: "image/png", // adapt if JPEG
+          mimeType: "image/jpeg" || "image/jpg", // adapt if JPEG
           data: imageBase64.replace(/^data:image\/(png|jpeg|jpg);base64,/, ""),
         },
       });
