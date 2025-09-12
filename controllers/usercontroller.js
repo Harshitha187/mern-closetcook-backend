@@ -28,7 +28,7 @@ export const getUserData = async (req, res) => {
         followerCount: user.followerCount,
         followingCount: user.followingCount,
         postCount: user.postCount,
-        isAccountVerified: user.isAccountVerified
+        isAccountVerified: user.isVerified
       }
     });
   } catch (error) {
@@ -40,7 +40,7 @@ export const getUserData = async (req, res) => {
 // Update user profile
 export const updateProfile = async (req, res) => {
   try {
-    const userId = req.body.userId;
+    const userId = req.userId;
     const { name, bio, location, website, stylePreferences } = req.body;
 
     let updateData = {
