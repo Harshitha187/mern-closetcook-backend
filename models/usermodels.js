@@ -62,7 +62,7 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
-  isAccountVerified: {
+  isVerified: {
     type: Boolean,
     default: false
   },
@@ -70,7 +70,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
-  resetExpireAt: {
+  resetOtpExpireAt: {
     type: Number,
     default: 0
   },
