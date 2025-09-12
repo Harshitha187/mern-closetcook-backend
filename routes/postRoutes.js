@@ -16,7 +16,7 @@ const postRouter = express.Router();
 postRouter.post('/create', userAuth, uploadMultiple, handleUploadError, createPost);
 
 // Get all posts (feed) - public route, no auth required
-postRouter.get('/feed', getAllPosts);
+postRouter.get('/all', getAllPosts);
 
 // Get user's posts
 postRouter.get('/user/:userId', userAuth, getUserPosts);
