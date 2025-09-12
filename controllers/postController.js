@@ -128,7 +128,7 @@ export const getPostsByDate = async (req, res) => {
 // Toggle stitch (like/unlike)
 export const toggleStitch = async (req, res) => {
   try {
-    const postId = req.postId;
+    const {postId} = req.params;
     const userId = req.userId;
 
     const post = await Post.findById(postId);
@@ -168,7 +168,7 @@ export const toggleStitch = async (req, res) => {
 // Delete post
 export const deletePost = async (req, res) => {
   try {
-    const postId = req.postId;
+    const {postId} = req.params;
     const userId = req.userId;
 
     const post = await Post.findOne({ _id: postId, user: userId });
