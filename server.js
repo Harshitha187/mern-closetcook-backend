@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import connectDB from "./config/mongodb.js";
 import authrouter from "./routes/authroutes.js";
 import userrouter from "./routes/userRoutes.js";
+import postRoutes from "./routes/postRoutes.js";
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -23,6 +24,7 @@ app.use(cors({
 
 app.use("/api/auth", authrouter);
 app.use("/api/user", userrouter);
+app.use("/api/posts", postRoutes);
 
 app.get("/", (req, res) => {
   res.send("Running");
