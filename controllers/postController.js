@@ -52,8 +52,8 @@ export const createPost = async (req, res) => {
 // Get all posts (feed)
 export const getAllPosts = async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
+    const page = parseInt(req.page) || 1;
+    const limit = parseInt(req.limit) || 10;
     const skip = (page - 1) * limit;
 
     const posts = await Post.find()
@@ -73,9 +73,9 @@ export const getAllPosts = async (req, res) => {
 // Get user's posts
 export const getUserPosts = async (req, res) => {
   try {
-    const { userId } = req.params;
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 12;
+    const { userId } = req.userId;
+    const page = parseInt(req.page) || 1;
+    const limit = parseInt(req.limit) || 12;
     const skip = (page - 1) * limit;
 
     const posts = await Post.find({ user: userId })
