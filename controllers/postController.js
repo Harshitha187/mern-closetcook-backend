@@ -6,7 +6,7 @@ import cloudinary from '../config/cloudinary.js';
 export const createPost = async (req, res) => {
   try {
     const { description, tags } = req.body;
-    const userId = req.body.userId;
+    const userId = req.userId;
 
     if (!description) {
       return res.json({ success: false, message: 'Description is required' });
@@ -95,7 +95,7 @@ export const getUserPosts = async (req, res) => {
 export const getPostsByDate = async (req, res) => {
   try {
     const { date } = req.query;
-    const userId = req.body.userId;
+    const userId = req.userId;
 
     if (!date) {
       return res.json({ success: false, message: 'Date is required' });
@@ -129,7 +129,7 @@ export const getPostsByDate = async (req, res) => {
 export const toggleStitch = async (req, res) => {
   try {
     const { postId } = req.params;
-    const userId = req.body.userId;
+    const userId = req.userId;
 
     const post = await Post.findById(postId);
     if (!post) {
@@ -169,7 +169,7 @@ export const toggleStitch = async (req, res) => {
 export const deletePost = async (req, res) => {
   try {
     const { postId } = req.params;
-    const userId = req.body.userId;
+    const userId = req.userId;
 
     const post = await Post.findOne({ _id: postId, user: userId });
     if (!post) {
