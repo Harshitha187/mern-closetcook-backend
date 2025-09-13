@@ -40,13 +40,17 @@ export const register=async(req,res)=>{
           from:process.env.SMTP_MAIL,
           to:email,
           subject:'Verify Your Email - ClosetCook',
-          text:`Hello ${name},\n\nWelcome to ClosetCook nigga! Your email verification OTP is: ${otp}\n\nThis OTP is valid for 5 minutes.\n\nBest regards,\nClosetCook Team`
+          text:`Hello ${name},\n\nWelcome to ClosetCook! Your email verification OTP is: ${otp}\n\nThis OTP is valid for 5 minutes.\n\nBest regards,\nClosetCook Team`
         };
-        await transporter.sendMail(mail);
-        console.log('OTP email sent successfully to:', email);
+        
+        console.log('Attempting to send registration OTP email to:', email);
+        const result = await transporter.sendMail(mail);
+        console.log('Registration OTP email sent successfully:', result.messageId);
       } catch (emailError) {
-        console.error('Error sending OTP email:', emailError.message);
-        // Don't fail registration if email fails
+        console.error('Detailed registration email error:', emailError);
+        console.error('Error code:', emailError.code);
+        console.error('Error message:', emailError.message);
+        // Don't fail registration if email fails, but log the error
       }
 
       res.json({success:true, message: "Registration successful! OTP sent to your email."});
@@ -81,10 +85,14 @@ export const register=async(req,res)=>{
           subject:'Verify Your Email - ClosetCook',
           text:`Hello ${name},\n\nYour new email verification OTP is: ${otp}\n\nThis OTP is valid for 5 minutes.\n\nBest regards,\nClosetCook Team`
         };
-        await transporter.sendMail(mail);
-        console.log('OTP email sent successfully to:', email);
+        
+        console.log('Attempting to send updated registration OTP email to:', email);
+        const result = await transporter.sendMail(mail);
+        console.log('Updated registration OTP email sent successfully:', result.messageId);
       } catch (emailError) {
-        console.error('Error sending OTP email:', emailError.message);
+        console.error('Detailed updated registration email error:', emailError);
+        console.error('Error code:', emailError.code);
+        console.error('Error message:', emailError.message);
       }
 
       return res.json({success:true, message: "Account updated! New OTP sent to your email."});
@@ -197,13 +205,28 @@ export const verifyotp = async (req, res) => {
       const mail = {
         from: process.env.SMTP_MAIL,
         to: user.email,
-        subject: 'Your OTP Code',
-        text: `Your OTP code is ${otp}. It is valid for 5 minutes.`
+        subject: 'Your OTP Code - ClosetCook',
+        text: `Hello ${user.name},\n\nYour OTP code is ${otp}. It is valid for 5 minutes.\n\nBest regards,\nClosetCook Team`
       };
-      await transporter.sendMail(mail);
+      
+      console.log('Attempting to send OTP email to:', user.email);
+      console.log('SMTP settings:', {
+        host: 'smtp-relay.brevo.com',
+        from: process.env.SMTP_MAIL,
+        user: process.env.SMTP_USER
+      });
+      
+      const result = await transporter.sendMail(mail);
+      console.log('OTP email sent successfully:', result.messageId);
     } catch (emailError) {
-      console.error('Error sending OTP email:', emailError.message);
-      // Continue without failing the response
+      console.error('Detailed email error:', emailError);
+      console.error('Error code:', emailError.code);
+      console.error('Error message:', emailError.message);
+      return res.json({ 
+        success: false, 
+        message: 'Failed to send OTP email. Please check your email configuration.',
+        error: emailError.message 
+      });
     }
 
     return res.json({ success: true, message: "OTP sent to your email" });
