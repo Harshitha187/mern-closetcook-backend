@@ -1,18 +1,10 @@
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Load .env from the project root (two levels up from config folder)
-dotenv.config({ path: path.join(__dirname, '../../.env') });
-
+dotenv.config();
 const transporter = nodemailer.createTransport({
   host: 'smtp-relay.brevo.com',
   port: 587,
-  secure: true, // Use TLS
+  secure: false, // Use TLS
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS
