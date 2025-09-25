@@ -34,5 +34,4 @@ transporter.verify((error, success) => {
     console.log('SMTP server ready:', success);
   }
 });
-
 export default transporter;
