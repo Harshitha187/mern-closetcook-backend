@@ -3,10 +3,7 @@ import dotenv from "dotenv";
 dotenv.config({ path: "../.env" }); // adjust path if needed
 const connectDB = async () => {
   try {
-    await mongoose.connect(`${process.env.MONGODB_URI}/fullstack`, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(`${process.env.MONGODB_URI}/fullstack`);
     console.log("MongoDB connected...");
   } catch (err) {
     console.error(err.message);
