@@ -1,6 +1,18 @@
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
-dotenv.config();
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load .env from the project root (two levels up from config folder)
+dotenv.config({ path: path.join(__dirname, '../../.env') });
+
+// Debug: Check if credentials are loaded
+console.log('SMTP_USER:', process.env.SMTP_USER ? 'loaded' : 'NOT LOADED');
+console.log('SMTP_PASS:', process.env.SMTP_PASS ? 'loaded' : 'NOT LOADED');
+console.log('SMTP_MAIL:', process.env.SMTP_MAIL ? 'loaded' : 'NOT LOADED');
 
 const transporter = nodemailer.createTransport({
   host: 'smtp-relay.brevo.com',
