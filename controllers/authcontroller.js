@@ -34,26 +34,24 @@ export const register=async(req,res)=>{
       };
       res.cookie('token', token, cookieOptions);
 
-      // Send OTP email automatically (async - don't wait)
-      const sendEmailAsync = async () => {
-        try {
-          const mail={
-            from:process.env.SMTP_MAIL,
-            to:email,
-            subject:'Verify Your Email - ClosetCook',
-            text:`Hello ${name},\n\nWelcome to ClosetCook! Your email verification OTP is: ${otp}\n\nThis OTP is valid for 5 minutes.\n\nBest regards,\nClosetCook Team`
-          };
-          
-          console.log('Sending registration OTP email to:', email);
-          const result = await transporter.sendMail(mail);
-          console.log('Registration OTP email sent successfully:', result.messageId);
-        } catch (emailError) {
-          console.error('Registration email error:', emailError.message);
-        }
-      };
-      
-      // Fire and forget - don't wait for email
-      sendEmailAsync();
+      // Send OTP email automatically
+      try {
+        const mail={
+          from:process.env.SMTP_MAIL,
+          to:email,
+          subject:'Verify Your Email - ClosetCook',
+          text:`Hello ${name},\n\nWelcome to ClosetCook! Your email verification OTP is: ${otp}\n\nThis OTP is valid for 5 minutes.\n\nBest regards,\nClosetCook Team`
+        };
+        
+        console.log('Attempting to send registration OTP email to:', email);
+        const result = await transporter.sendMail(mail);
+        console.log('Registration OTP email sent successfully:', result.messageId);
+      } catch (emailError) {
+        console.error('Detailed registration email error:', emailError);
+        console.error('Error code:', emailError.code);
+        console.error('Error message:', emailError.message);
+        // Don't fail registration if email fails, but log the error
+      }
 
       res.json({success:true, message: "Registration successful! OTP sent to your email."});
     }
@@ -74,31 +72,28 @@ export const register=async(req,res)=>{
       const cookieOptions = {
         httpOnly: true,
         maxAge: 7*24*60*60*1000,
-        sameSite: 'none',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
         secure: process.env.NODE_ENV === 'production'
       };
       res.cookie('token', token, cookieOptions);
 
-      // Send OTP email (async - don't wait)
-      const sendEmailAsync = async () => {
-        try {
-          const mail={
-            from:process.env.SMTP_MAIL,
-            to:email,
-            subject:'Verify Your Email - ClosetCook',
-            text:`Hello ${name},\n\nYour new email verification OTP is: ${otp}\n\nThis OTP is valid for 5 minutes.\n\nBest regards,\nClosetCook Team`
-          };
-          
-          console.log('Sending updated registration OTP email to:', email);
-          const result = await transporter.sendMail(mail);
-          console.log('Updated registration OTP email sent successfully:', result.messageId);
-        } catch (emailError) {
-          console.error('Updated registration email error:', emailError.message);
-        }
-      };
-      
-      // Fire and forget - don't wait for email
-      sendEmailAsync();
+      // Send OTP email
+      try {
+        const mail={
+          from:process.env.SMTP_MAIL,
+          to:email,
+          subject:'Verify Your Email - ClosetCook',
+          text:`Hello ${name},\n\nYour new email verification OTP is: ${otp}\n\nThis OTP is valid for 5 minutes.\n\nBest regards,\nClosetCook Team`
+        };
+        
+        console.log('Attempting to send updated registration OTP email to:', email);
+        const result = await transporter.sendMail(mail);
+        console.log('Updated registration OTP email sent successfully:', result.messageId);
+      } catch (emailError) {
+        console.error('Detailed updated registration email error:', emailError);
+        console.error('Error code:', emailError.code);
+        console.error('Error message:', emailError.message);
+      }
 
       return res.json({success:true, message: "Account updated! New OTP sent to your email."});
     }
@@ -145,7 +140,7 @@ export const login=async(req,res)=>{
     const cookieOptions = {
       httpOnly: true,
       maxAge: 7*24*60*60*1000,
-      sameSite: 'none',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       secure: process.env.NODE_ENV === 'production'
     };
     res.cookie('token', token, cookieOptions);
@@ -173,7 +168,7 @@ export const logout = async (req, res) => {
     try {
         const cookieOptions = {
           httpOnly: true,
-          sameSite: 'none',
+          sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
           secure: process.env.NODE_ENV === 'production'
         };
         res.clearCookie('token', cookieOptions);
@@ -205,13 +200,8 @@ export const verifyotp = async (req, res) => {
     user.verifyOtpExpireAt = Date.now() + 5 * 60 * 1000; // 5 minutes
     await user.save();
 
-    // Send OTP email with timeout
+    // Send OTP email
     try {
-      // Verify transporter is available
-      if (!transporter) {
-        throw new Error('Email transporter not configured');
-      }
-
       const mail = {
         from: process.env.SMTP_MAIL,
         to: user.email,
@@ -219,21 +209,22 @@ export const verifyotp = async (req, res) => {
         text: `Hello ${user.name},\n\nYour OTP code is ${otp}. It is valid for 5 minutes.\n\nBest regards,\nClosetCook Team`
       };
       
-      console.log('Sending OTP email to:', user.email);
+      console.log('Attempting to send OTP email to:', user.email);
+      console.log('SMTP settings:', {
+        host: 'smtp-relay.brevo.com',
+        from: process.env.SMTP_MAIL,
+        user: process.env.SMTP_USER
+      });
       
-      // Add timeout to email sending
-      const emailPromise = transporter.sendMail(mail);
-      const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Email timeout')), 8000)
-      );
-      
-      const result = await Promise.race([emailPromise, timeoutPromise]);
+      const result = await transporter.sendMail(mail);
       console.log('OTP email sent successfully:', result.messageId);
     } catch (emailError) {
-      console.error('Email error:', emailError.message);
+      console.error('Detailed email error:', emailError);
+      console.error('Error code:', emailError.code);
+      console.error('Error message:', emailError.message);
       return res.json({ 
         success: false, 
-        message: 'Failed to send OTP email: ' + emailError.message,
+        message: 'Failed to send OTP email. Please check your email configuration.',
         error: emailError.message 
       });
     }
@@ -304,7 +295,7 @@ export const resetpass=async(req,res)=>{
     const cookieOptions = {
       httpOnly: true,
       maxAge: 7*24*60*60*1000,
-      sameSite: 'none',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       secure: process.env.NODE_ENV === 'production'
     };
     res.cookie('token', token, cookieOptions);
