@@ -12,14 +12,14 @@ dotenv.config({ path: path.join(__dirname, '../../.env') });
 const transporter = nodemailer.createTransport({
   host: 'smtp-relay.brevo.com',
   port: 587,
-  secure: false, // Use TLS
+  secure: true, // Use TLS
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS
   },
-  connectionTimeout: 15000, // 15 seconds
-  greetingTimeout: 5000, // 5 seconds
-  socketTimeout: 15000, // 15 seconds
+  connectionTimeout: 35000, // 35 seconds
+  greetingTimeout: 25000, // 25 seconds
+  socketTimeout: 35000, // 35 seconds
   debug: false, // Disable debug for performance
   logger: false // Disable logging for performance
 });
